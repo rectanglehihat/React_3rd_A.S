@@ -1,27 +1,30 @@
-// 쿠키 가져오기 (키값 기준으로 쿠키에 저장된 값을 가져오는 함수)
+// 쿠키 가져오기(키:밸류 형태니까 키인 name으로 가져옴)
 const getCookie = (name) => {
-    // 쿠키 값을 가져옵니다.
     let value = "; " + document.cookie;
-    // 키 값을 기준으로 파싱합니다.
-    let parts = value.split("; " + name + "=");
-    // value를 return!
+    // 키 값을 기준으로 파싱합니다.(쿠키가 불편한 이유ㅋ)
+    let parts = value.split(`; ${name}=`);
+
     if (parts.length === 2) {
           return parts.pop().split(";").shift();
       }
   };
   
-// 쿠키에 저장하는 함수
-const setCookie = (name, value, exp = 5) => {
-
+  // 쿠키 추가(클라이언트 토큰 저장소인 쿠키에 저장)
+  const setCookie = (name, value, exp = 5) => {
+    // 날짜를 만들어 저장
     let date = new Date();
     date.setTime(date.getTime() + exp * 24 * 60 * 60 * 1000);
 
-    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-};
-
-// 쿠키 지우기 (만료일을 예전으로 설정해 쿠키를 지웁기)
-const deleteCookie = (name) => {
-document.cookie = name + '=; expires=Thu, 01 Jan 1999 00:00:10 GMT;';
-}
-
-export { getCookie, setCookie, deleteCookie };
+    document.cookie = `${name}=${value};expires=${date.toUTCString()}`;
+  };
+  
+  // 쿠키 삭제 (만료일을 예전으로 설정해서)
+  const deleteCookie = (name) => {
+      let date = new Date("2020-01-01").toDateString();
+        
+      console.log(date);
+      
+      document.cookie = name + "=; expires=" + date;
+  }
+  
+  export { getCookie, setCookie, deleteCookie };

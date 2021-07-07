@@ -9,11 +9,11 @@ const Input = (props) => {
     if(multiLine){
         return(
             <Grid>
-                <Text>{label}</Text>
+                {label && <Text margin="20px 0px 0px 0px">{label}</Text>}
                 <ElTextarea
-                row={10}
+                rows={10}
                 placeholder={placeholder}
-                _onChange={_onChange}
+                onChange={_onChange}
                 value={value}
                 />
             </Grid>
@@ -23,7 +23,7 @@ const Input = (props) => {
     return (
         <React.Fragment>
             <Grid>
-                <Text margin="0px">{label}</Text>
+                {label && <Text margin="0px">{label}</Text>}
                 <ElInput type={type} placeholder={placeholder} onChange={_onChange}/>
             </Grid>
         </React.Fragment>
@@ -31,7 +31,7 @@ const Input = (props) => {
 }
 
 Input.defaultProps = {
-    label: '텍스트',
+    label: false,
     placeholder: '텍스트를 입력해주세요.',
     _onChange: () => {},
     type: 'text',

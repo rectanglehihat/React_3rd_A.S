@@ -1,8 +1,11 @@
 import React from "react";
 import { Grid, Text, Input, Button } from "../elements";
 
-import { useDispatch } from "react-redux";
-import { actionCreators as userActions } from "../redux/modules/user";
+import {useDispatch} from "react-redux";
+import {actionCreators as userActios} from "../redux/modules/user";
+
+import { emailCheck } from "../shared/common"
+
 
 const Signup = (props) => {
   const dispatch = useDispatch();
@@ -13,16 +16,23 @@ const Signup = (props) => {
   const [user_name, setUserName] = React.useState("");
 
   const signup = () => {
-    if (id === "" || pwd === "" || user_name === "") {
+    if(id === "" || pwd === "" || user_name === ""){
+      window.alert("아이디, 패스워드, 닉네임을 모두 입력해주세요!");
       return;
     }
-    
     if (pwd !== pwd_check) {
+      window.alert("패스워드와 패스워드 확인이 일치하지 않습니다!");
+      return;
+    }
+    if(!emailCheck(id)){
+      window.alert("이메일 형식이 맞지 않습니다!");
       return;
     }
 
-    dispatch(userActions.signupFB(id, pwd, user_name));
-  };
+    dispatch(userActios.signupFB(id, pwd, user_name));
+  }
+
+
   return (
     <React.Fragment>
       <Grid padding="16px">
@@ -35,7 +45,7 @@ const Signup = (props) => {
             label="아이디"
             placeholder="아이디를 입력해주세요."
             _onChange={(e) => {
-              setId(e.target.value);
+              setId(e.target.value);  // e.target.value 를 조회하면 현재 input 에 입력한 값이 무엇인지 알 수 있다.
             }}
           />
         </Grid>
@@ -70,7 +80,7 @@ const Signup = (props) => {
           />
         </Grid>
 
-        <Button bg="#EC8B5E" text="회원가입하기" _onClick={signup}></Button>
+        <Button text="회원가입하기" _onClick={signup}></Button>
       </Grid>
     </React.Fragment>
   );
