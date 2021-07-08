@@ -1,8 +1,10 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
-import { firestore } from "../../shared/firebase";
+import { firestore, storage } from "../../shared/firebase";
 import moment from "moment";
 import "moment";
+
+import { actionCreators as imageActions } from "./image";
 
 
 const SET_POST = "SET_POST";
@@ -34,6 +36,7 @@ const addPostFB = (contents = "") => {
         const postDB = firestore.collection("post");
 
         //user_info는 유저 리덕스 안에 있는 값으로 가져옴
+        //getState()로 store의 상태값에 접근
         const _user = getState().user.user;
         const user_info = {
             user_name: _user.user_name,
@@ -46,16 +49,44 @@ const addPostFB = (contents = "") => {
             contents: contents,
             insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
         };
+        // 데이터가 어떤 타입인지 확인
+        const _image = getState().image.preview
+        console.log(typeof _image)
 
-        //user_info와 _post라고 만든 정보 firebase에 넣어주기
-        postDB.add({...user_info, ..._post}).then((doc) => {
-            // 아이디를 추가해요!
-            let post = {user_info, ..._post, id: doc.id};
-            dispatch(addPost(post));
-            history.replace("/");
-        }).catch((err) => {
-            console.log('post 작성 실패!', err);
-        });
+        const _upload = storage
+            // 파일 이름은 유저의 id와 현재 시간을 밀리초로 넣기 (중복 방지)
+            .ref(`images/${user_info.user_id}_${new Date().getTime()}`)
+            .putString(_image, "data_url");
+
+        _upload.then((snapshot) => {
+            snapshot.ref.getDownloadURL().then(url => {
+                console.log(url);
+
+                return url;
+            }).then(url => {
+            // return으로 넘겨준 값이 잘 넘어왔는지 확인
+            console.log(url);
+
+            //user_info와 _post라고 만든 정보 firebase에 넣어주기
+            postDB
+                .add({...user_info, ..._post, image_url: url})
+                .then((doc) => {
+                //아이디 추가
+                let post = {user_info, ..._post, id: doc.id, image_url: url};
+                dispatch(addPost(post));
+                history.replace("/");
+
+                dispatch(imageActions.setPreview(null));
+            }).catch((err) => {
+                window.alert("앗! 포스트 작성에 문제가 있어요!");
+                console.log('post 작성 실패!', err);
+            });
+            })
+        })  
+        .catch((err) => {
+            window.alert("앗! 이미지 업로드에 문제가 있어요!");
+            console.log(err);
+        });      
     };
 };
 

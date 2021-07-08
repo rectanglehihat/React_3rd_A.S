@@ -16,26 +16,31 @@ const Upload = (props) => {
         console.log(e)
         console.log(e.target.files)
         console.log(e.target.files[0]);
+        // 이게 파일 하나
         console.log(fileInput.current.files[0]);
+
+        const reader = new FileReader();
+        const file = fileInput.current.files[0];
+
+        // 파일 내용을 읽어오기
+        reader.readAsDataURL(file);
+        // 읽기가 끝나면 발생하는 이벤트 핸들러
+        reader.onloadend = () => {
+            // reader.result는 파일의 컨텐츠(내용물)입니다!
+            console.log(reader.result);
+            dispatch(imageActions.setPreview(reader.result));
+          };
     }
 
     //이미지 스토리지에 업로드
     const uploadFB = () => {
-        let image = fileInput.current?.files[0];
-        // 파일 이름을 포함하여 파일의 전체 경로를 가리키는 참조를 만들기
-        const _upload = storage.ref(`images/${image.name}`).put(image);
-  
-         // 업로드
-        _upload.then((snapshot) => {
-          console.log(snapshot);
-
-        // 업로드한 파일의 다운로드 경로 가져오기
-        snapshot.ref.getDownloadURL().then((url) => {
-            console.log(url);
-        })
-        });
-    }
-
+        if (!fileInput.current || fileInput.current.files.length === 0) {
+          window.alert("파일을 선택해주세요!");
+          return;
+        }
+    
+        dispatch(imageActions.uploadImageFB(fileInput.current.files[0]));
+      };
     return (
         <React.Fragment>
             <input type="file" ref={fileInput} onChange={selectFile} disabled={uploading}/>
