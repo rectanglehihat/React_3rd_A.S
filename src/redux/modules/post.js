@@ -162,6 +162,29 @@ const getPostFB = () => {
     return function (dispatch, getState, { history }) {
         const postDB = firestore.collection("post");
 
+        let query = postDB.orderBy("insert_dt", "desc").limit(2);
+
+        query.get().then((docs) => {
+            let post_list = [];
+            docs.forEach((doc) => {
+
+                let _post = doc.data();
+
+                //키값들을 배열로 만들어줌
+                let post = Object.keys(_post).reduce((acc, cur) => {
+
+                if(cur.indexOf("user_") !== -1){
+                    return {...acc, user_info: {...acc.user_info, [cur]: _post[cur]}}
+                }
+                return {...acc, [cur]: _post[cur]};
+            }, {id: doc.id, user_info: {}})
+            post_list.push(post)
+        });
+        dispatch(setPost(post_list));
+    });
+
+        return;
+
         postDB.get().then((docs) => {
         let post_list = [];
 
