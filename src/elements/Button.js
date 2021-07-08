@@ -42,6 +42,7 @@ const ElButton = styled.button`
     padding: 12px 0px;
     box-sizing: border-box;
     border: none;
+    padding: ${(props) => props.padding};
     ${(props) => (props.margin? `margin: ${props.margin};` : '')}
 `;
 

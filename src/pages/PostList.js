@@ -8,6 +8,10 @@ import {actionCreators as postActions} from "../redux/modules/post";
 const PostList = (props) => {
     const dispatch = useDispatch();
     const post_list = useSelector((state) => state.post.list);
+    //게시글 하나에는 유저정보가 들어있음.
+    //나도 로그인을 했으니 유저정보를 가지고 있음.(유저 리덕스에)
+    //수정버튼을 달기 위해 유저정보 가져옴(uid가지고 비교)
+    const user_info = useSelector((state) => state.user.user);
 
     console.log(post_list)
 
@@ -26,7 +30,17 @@ const PostList = (props) => {
         <React.Fragment>
             {/* <Post/> */}
             {post_list.map((p, idx) => {
-                return <Post key={p.id} {...p} />
+                //로그인을 안했을 경우(유저인포가 null일 경우)는 
+                //유저리덕스에 있는 유저인포를 찾을 수 없음
+                //옵셔널 체이닝 ?. 사용
+                //게시글 하나의 유저인포에 있는 유저아이디가 유저리덕스에 있는 유저인포의 uid와 같다면
+                //같은사람이니까 수정할 수 있도록 함
+                if (p.user_info.user_id === user_info?.uid){
+                    return <Post key={p.id} {...p} is_me/>
+                }else{
+                    return <Post key={p.id} {...p}/>
+                }
+                
             })}
         </React.Fragment>
     )
