@@ -6,6 +6,7 @@ import { connectRouter } from "connected-react-router";
 import User from "./modules/user";
 import Post from "./modules/post";
 import Image from "./modules/image";
+import Comment from "./modules/comment";
 
 
 // history를 스토어에서도 쓸 수 있도록 
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     user: User,
     post: Post,
     image:Image,
+    comment: Comment,
     router: connectRouter(history),
   });
 

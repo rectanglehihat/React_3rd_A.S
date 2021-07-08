@@ -14,7 +14,7 @@ const PostWrite = (props) => {
     const preview = useSelector((state) => state.image.preview);
     const post_list = useSelector((state) => state.post.list);
 
-    console.log(props.match.params.id)
+    // console.log(props.match.params.id)
 
     const post_id = props.match.params.id;
     const is_edit = post_id ? true : false;
@@ -23,7 +23,7 @@ const PostWrite = (props) => {
 
     let _post = is_edit ? post_list.find((p) => p.id === post_id) : null;
 
-    console.log(_post)
+    // console.log(_post)
 
     const [contents, setContents] = React.useState(_post ? _post.contents : "");
 
@@ -38,7 +38,6 @@ const PostWrite = (props) => {
         if (is_edit) {
             dispatch(imageActions.setPreview(_post.image_url));
           }
-
      }, [])
 
     const changeContents = (e) => {
@@ -68,7 +67,7 @@ const PostWrite = (props) => {
         <React.Fragment>
             <Grid padding="16px">
                 <Text bold size="36px">{is_edit ? "게시글 수정" : "게시글 작성"}</Text>
-                <Upload>추가하기</Upload>
+                <Upload/>
             </Grid>
 
             <Grid padding="16px">
@@ -95,14 +94,9 @@ const PostWrite = (props) => {
                     ) : (
                     <Button _onClick={addPost}>게시글 작성</Button>
                     )}
-                
             </Grid>
         </React.Fragment>
     )
-}
-
-PostWrite.defaultProps = {
-
 }
 
 export default PostWrite;
