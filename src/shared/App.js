@@ -7,7 +7,8 @@ import PostList from "../pages/PostList";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup"
 import PostWrite from "../pages/PostWrite";
-import PostDetail from "../pages/PostDetail"
+import PostDetail from "../pages/PostDetail";
+import Notification from "../pages/Notification";
 
 import Header from "../components/Header";
 import Grid from "../elements/Grid";
@@ -45,6 +46,7 @@ function App() {
           <Route path="/signup" exact component={Signup}/>
           <Route path="/write" exact component={PostWrite}/>
           <Route path="/post/:id" exact component={PostDetail}/>
+          <Route path="/noti" exact component={Notification}/>
         </ConnectedRouter>
       </Grid>
       <Permit>

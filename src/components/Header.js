@@ -30,7 +30,7 @@ const Header = (props) => {
     
                     <Grid is_flex>
                         <Button children="내정보" _onClick={() => console.log("내정보 가기")}></Button>
-                        <Button children="알림" _onClick={() => console.log("알림 가기")}></Button>
+                        <Button children="알림" _onClick={() => history.push('/noti')}></Button>
                         <Button children="로그아웃" _onClick={() => dispatch(userActions.logoutFB({}))}></Button>
                     </Grid>
                 </Grid>
