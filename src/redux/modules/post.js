@@ -9,10 +9,16 @@ import { actionCreators as imageActions } from "./image";
 
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
+const EDIT_POST = "EDIT_POST";
 
 
 const setPost = createAction(SET_POST, (post_list) => ({post_list}));
 const addPost = createAction(ADD_POST, (post) => ({post}));
+//게시물 수정하려면 post_id랑 post가 필요함
+const editPost = createAction(EDIT_POST, (post_id, post) => ({
+    post_id,
+    post,
+  }))
 
 //리듀서가 사용할 이니셜스테이트
 const initialState = {
@@ -30,6 +36,67 @@ const initialPost = {
     comment_cnt: 0,
     insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
   };
+
+const editPostFB = (post_id = null, post = {}) => {
+    return function (dispatch, getState, {history}) {
+
+        if(!post_id) {
+            console.log("게시물 정보가 없어요!");
+            return;
+        }
+
+        const _image = getState().image.preview;
+
+        const _post_idx = getState().post.list.findIndex((p) => p.id === post_id);
+        const _post = getState().post.list[_post_idx];
+
+        console.log(_post);
+
+        //수정할 컬렉션 가져오고
+        const postDB = firestore.collection("post");
+        // 프리뷰에 있는 이미지랑 이 포스트의 이미지 url이 같은지 확인
+        if (_image === _post.image_url) {
+            postDB
+                .doc(post_id)
+                .update(post)
+                .then((doc) => {
+                    dispatch(editPost(post_id, { ...post }));
+                    history.replace("/");
+                });
+
+                return;
+        }else{
+            const user_id = getState().user.user.uid;
+            const _upload = storage
+              .ref(`images/${user_id}_${new Date().getTime()}`)
+              .putString(_image, "data_url");
+      
+            _upload.then((snapshot) => {
+              snapshot.ref
+                .getDownloadURL()
+                .then((url) => {
+                  console.log(url);
+      
+                  return url;
+                })
+                .then((url) => {
+                  postDB
+                    .doc(post_id)
+                    .update({ ...post, image_url: url })
+                    .then((doc) => {
+                      dispatch(editPost(post_id, { ...post, image_url: url }));
+                      history.replace("/");
+                    });
+                })
+                .catch((err) => {
+                    window.alert("앗! 이미지 업로드에 문제가 있어요!");
+                    console.log(err);
+                })  
+            })
+        }
+    }
+}
+
 
 const addPostFB = (contents = "") => {
     return function (dispatch, getState, { history }){
@@ -126,7 +193,14 @@ export default handleActions({
     [ADD_POST]: (state, action) => produce(state, (draft) => {
         //배열에 제일 앞에 붙이니까 unshift사용
         draft.list.unshift(action.payload.post);
-    })
+    }),
+    [EDIT_POST]: (state, action) => produce(state, (draft) => {
+        //리스트에서 몇번째거를 수정할건지 알아야함
+        //findIndex()는 조건에 맞는 애의 인덱스 번호를 줌
+        let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
+        
+        draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
+      }),
     }, initialState
 );
 
@@ -134,8 +208,10 @@ export default handleActions({
 const actionCreators = {
     setPost,
     addPost,
+    editPost,
     getPostFB,
     addPostFB,
+    editPostFB,
   };
   
   export { actionCreators };

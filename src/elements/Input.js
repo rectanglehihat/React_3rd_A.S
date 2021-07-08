@@ -12,6 +12,7 @@ const Input = (props) => {
                 {label && <Text margin="20px 0px 0px 0px">{label}</Text>}
                 <ElTextarea
                 rows={10}
+                value={value}
                 placeholder={placeholder}
                 onChange={_onChange}
                 value={value}

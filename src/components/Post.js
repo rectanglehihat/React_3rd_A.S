@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Image, Text, Button } from "../elements";
+import { history } from "../redux/configureStore";
 
 const Post = (props) => {
 
@@ -13,7 +14,10 @@ const Post = (props) => {
                 </Grid>
                 <Grid is_flex width="auto">
                     <Text>{props.insert_dt}</Text>
-                    {props.is_me && <Button width="auto" padding="4px" margin="4px">수정</Button>}
+                    {props.is_me && 
+                    <Button width="auto" padding="4px" margin="4px" _onClick={() => 
+                        {history.push(`/write/${props.id}`)}}>
+                        수정</Button>}
                 </Grid>
             </Grid>
 
